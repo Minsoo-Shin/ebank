@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "/testbank";
+
+message Account {
+  int64 id = 1;
+  string account_number = 2;
+  int64 customer_id = 3;
+  double balance = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message Transaction {
+  int64 id = 1;
+  int64 account_id = 2;
+  double amount = 3;
+  string transaction_type = 4; // "DEPOSIT" 또는 "WITHDRAWAL"
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+
+// Account CRUD 요청/응답 메시지
+message CreateAccountRequest {
+  int64 user_id = 1;
+  string account_number = 2;
+}
+
+message UpdateAccountRequest {
+  int64 id = 1;
+  string account_number = 2;
+}
+
+message GetAccountRequest {
+  int64 id = 1;
+}
+
+message DeleteAccountRequest {
+  int64 id = 1;
+}
+
+message AccountResponse {
+  Account account = 1;
+}
+
+// 입금/출금 요청/응답 메시지
+message DepositRequest {
+  int64 account_id = 1;
+  double amount = 2;
+}
+
+message WithdrawRequest {
+  int64 account_id = 1;
+  double amount = 2;
+}
+
+message TransactionResponse {
+  Transaction transaction = 1;
+  double new_balance = 2;
+}
+
+
+// 거래 내역 조회 요청/응답 메시지
+message GetTransactionHistoryRequest {
+  int64 account_id = 1;
+  google.protobuf.Timestamp start_date = 3;
+  google.protobuf.Timestamp end_date = 4;
+}
+
+message GetTransactionHistoryResponse {
+  repeated Transaction transactions = 1;
+}
+
+service AccountService {
+
+  // Account CRUD
+  rpc CreateAccount(CreateAccountRequest) returns (AccountResponse);
+  rpc GetAccount(GetAccountRequest) returns (AccountResponse);
+  rpc UpdateAccount(UpdateAccountRequest) returns (AccountResponse);
+  rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty);
+
+  // 입금/출금
+  rpc Deposit(DepositRequest) returns (TransactionResponse);
+  rpc Withdraw(WithdrawRequest) returns (TransactionResponse);
+
+  // 거래 내역 조회
+  rpc GetTransactionHistory(GetTransactionHistoryRequest) returns (GetTransactionHistoryResponse);
+}
