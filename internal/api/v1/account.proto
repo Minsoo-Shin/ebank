@@ -4,8 +4,11 @@ package proto;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "googleapis/google/api/annotations.proto";
 
-option go_package = "/testbank";
+
+
+option go_package = "/ebank";
 
 message Account {
   int64 id = 1;
@@ -78,7 +81,13 @@ message GetTransactionHistoryResponse {
 service AccountService {
 
   // Account CRUD
-  rpc CreateAccount(CreateAccountRequest) returns (AccountResponse);
+  rpc CreateAccount(CreateAccountRequest) returns (AccountResponse) {
+
+    option (google.api.http) = {
+      post: "/v1/accounts"
+      body: "*"
+    };
+  };
   rpc GetAccount(GetAccountRequest) returns (AccountResponse);
   rpc UpdateAccount(UpdateAccountRequest) returns (AccountResponse);
   rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty);

@@ -9,10 +9,10 @@ all: proto
 # Protocol Buffers 파일 컴파일
 proto:
 	@protoc --proto_path=. \
-		--go_out=. \
-		--go_opt=paths=source_relative \
-		--go-grpc_out=. \
-	    --go-grpc_opt=paths=source_relative \
+		--go_out=. --go_opt=paths=source_relative \
+		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
+	    --grpc-gateway_out . --grpc-gateway_opt paths=source_relative \
+	    --openapiv2_out . --openapiv2_opt use_go_templates=true \
 		$(PROTO_DIR)/*.proto
 
 # 생성된 파일 삭제

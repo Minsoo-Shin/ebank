@@ -1,20 +1,31 @@
 package main
 
 import (
+	"context"
 	pb "ebank/internal/api/v1"
+	"flag"
 	"fmt"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"net"
+	"net/http"
 
 	"ebank/internal/repository/repository_impl"
 	"ebank/internal/service"
 	"ebank/pkg/config"
 	"ebank/pkg/jwt_manager"
+)
+
+var (
+	// command-line options:
+	// gRPC server endpoint
+	grpcServerEndpoint = flag.String("grpc-server-endpoint", "localhost:9090", "gRPC server endpoint")
 )
 
 func main() {
@@ -58,6 +69,16 @@ func main() {
 
 	pb.RegisterUserServiceServer(s, userService)
 	pb.RegisterAccountServiceServer(s, accountService)
+
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	err = pb.RegisterAccountServiceHandlerFromEndpoint(context.TODO(), mux, *grpcServerEndpoint, opts)
+	if err != nil {
+		log.Fatalf("Failed to register handler: %v", err)
+	}
+
+	// Start HTTP server (and proxy calls to gRPC server endpoint)
+	http.ListenAndServe(":8081", mux)
 
 	fmt.Println("Server is running on " + cfg.Server.Port)
 	if err := s.Serve(lis); err != nil {
