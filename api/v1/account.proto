@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+
+
+option go_package = "/ebank";
+
+message Account {
+  int64 id = 1;
+  string account_number = 2;
+  int64 customer_id = 3;
+  double balance = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+// Account CRUD 요청/응답 메시지
+message CreateAccountRequest {
+  int64 user_id = 1;
+  string account_number = 2;
+}
+
+message UpdateAccountRequest {
+  int64 id = 1;
+  string account_number = 2;
+}
+
+message GetAccountRequest {
+  int64 id = 1;
+}
+
+message DeleteAccountRequest {
+  int64 id = 1;
+}
+
+message AccountResponse {
+  Account account = 1;
+}
+
+service AccountService {
+
+  // Account CRUD
+  rpc CreateAccount(CreateAccountRequest) returns (AccountResponse);
+  rpc GetAccount(GetAccountRequest) returns (AccountResponse);
+  rpc UpdateAccount(UpdateAccountRequest) returns (AccountResponse);
+  rpc DeleteAccount(DeleteAccountRequest) returns (google.protobuf.Empty);
+}

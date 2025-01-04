@@ -1,7 +1,7 @@
 .PHONY: all clean proto
 
 # 변수 정의
-PROTO_DIR := internal/api/v1
+PROTO_DIR := api/v1
 FILES = data/account.json data/transaction.json data/user.json
 
 all: proto

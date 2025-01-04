@@ -1,10 +1,12 @@
 package jwt_manager
 
 import (
-	"ebank/internal/model"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+
+	"ebank/services/user/model"
 )
 
 type JWTManager interface {
@@ -68,10 +70,10 @@ func (manager *jwtManager) Verify(accessToken string) (*UserClaims, error) {
 	}
 
 	// 서버에서 강제로 토큰을 만료하고 싶을 때 활용
-	//if jwtExpiryDate, ok := manager.userJwtExpiryMap[claims.PhoneNumber]; ok && claims.IssuedAt < jwtExpiryDate {
+	// if jwtExpiryDate, ok := manager.userJwtExpiryMap[claims.PhoneNumber]; ok && claims.IssuedAt < jwtExpiryDate {
 	//	// 발급한 토큰이 서버 지정 만료시간보다 더 이전 토큰이라면 만료된 토큰으로 취급
 	//	return nil, fmt.Errorf("invalid token claims - expired token")
-	//}
+	// }
 
 	return claims, nil
 }
